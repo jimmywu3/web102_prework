@@ -30,7 +30,6 @@ function addGamesToPage(games) {
 
     // loop over each item in the data
     games.forEach((game) => {
-        console.log(game);
         const newGame = document.createElement("div");
         newGame.classList.add("game-card");
         const newHTML = `
@@ -168,8 +167,6 @@ const numUnfunded = unfunded.length;
 const displayStr = 
 `A total of $${localizedRaised} has been raised for ${GAMES_JSON.length - numUnfunded} ${GAMES_JSON.length - numUnfunded == 1 ? "game" : "games"}. Currently, ${numUnfunded} ${numUnfunded == 1 ? "game remains" : "games remain"} unfuned. We need your help to fund these amazing games!`;
 
-console.log(displayStr);
-
 
 // create a new DOM element containing the template string and append it to the description container
 
@@ -194,14 +191,51 @@ const sortedGames =  GAMES_JSON.sort( (item1, item2) => {
 
 const [firstGame, secondGame, ...others] = sortedGames;
 
-console.log(firstGame, secondGame);
-
 // create a new element to hold the name of the top pledge game, then append it to the correct element
 
-let topGame = firstGame.name;
-firstGameContainer.innerHTML = `${topGame}`;
+let topGame = document.createElement("p")
+topGame.innerHTML = `${firstGame.name}`;
+firstGameContainer.appendChild(topGame);
 
 // do the same for the runner up item
 
-let runnerGame = secondGame.name;
-secondGameContainer.innerHTML = `${runnerGame}`;
+let runnerGame = document.createElement("p");
+runnerGame.innerHTML = `${secondGame.name}`;
+secondGameContainer.appendChild(runnerGame);
+
+
+//Search button for game
+
+// <div class="game-search">
+//     <input class="game-search-input" type="text">
+//     <button class="game-search-button">Search</button>
+// </div>
+
+const search_input = document.getElementById("game-search-input");
+console.log(search_input);
+let search_query = "";
+search_input.addEventListener("input", () => {
+    search_query = search_input.value;
+});
+
+function filterSearch() {
+    deleteChildElements(gamesContainer);
+
+    // use filter() to get a list of games that have met or exceeded their goal
+
+    const searched = GAMES_JSON.filter((game) =>{
+        let temp_name = game.name.toLowerCase();
+        let search_name = search_query.toLowerCase();
+        if(temp_name.includes(search_name)){
+            return game;
+        }
+    })
+
+    // use the function we previously created to add unfunded games to the DOM
+
+    addGamesToPage(searched);
+
+}
+
+const search_button = document.getElementById("game-search-button");
+search_button.addEventListener("click", filterSearch);
